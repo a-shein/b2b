@@ -10,58 +10,56 @@ class Task2 extends Command
     protected $description = 'task2';
 
     /**
-     * Execute the console command.
-     *
      * @return void
      */
     public function handle(): void
     {
-        $string = 'https://www.somehost.com/test/index.html?param1=4&param2=3&param3=2&param4=1&param5=3';
-        $this->stringWorker($string);
+        $url = 'https://www.somehost.com/test/index.html?param1=4&param2=3&param3=2&param4=1&param5=3';
+
+        $urlToArray = parse_url($url);
+        $scheme = $urlToArray['scheme'];
+        $host = $urlToArray['host'];
+        $path = $urlToArray['path'];
+        $query = $urlToArray['query'];
+
+        $params = $this->removeSortAndGetParams($query);
+        $pathToString = $this->pathToString($path);
+
+        $newUrl = empty($scheme) ? '' : $scheme . '://';
+        $newUrl = $newUrl . $host . '/?' . $params . '&url=' . $pathToString;
+
+        echo $newUrl . PHP_EOL;
     }
 
     /**
-     * @param string $string
+     * @param string $params
      * @return string
      */
-    protected function stringWorker(string $string): string
+    protected function removeSortAndGetParams(string $params): string
     {
-        $firstIteration = explode('?', $string);
+        $data = explode('&', $params);
 
-        $secondIteration = explode('&',$firstIteration[1]);
+        $paramsWithoutTree = [];
 
-        $tempArray = [];
-        foreach ($secondIteration as $elem) {
-            $tempArray[] = explode('=', $elem);
-        }
+        foreach ($data as $param) {
+            list(, $value) = explode('=', $param);
 
-        $keysArray = [];
-        $valuesArray = [];
-        foreach ($tempArray as $tempElem) {
-            $keysArray[] = $tempElem[0];
-            $valuesArray[] = $tempElem[1];
-        }
-
-        $associativeArray = array_combine($keysArray, $valuesArray);
-
-        foreach ($associativeArray as $key => $value) {
-            if ($value == 3) {
-                unset($associativeArray[$key]);
+            if ($value != 3) {
+                $paramsWithoutTree[$value] = $param;
             }
         }
 
-        asort($associativeArray, SORT_REGULAR);
+        ksort($paramsWithoutTree);
 
-        $startString = str_replace(['index.html', 'param1=4&param2=3&param3=2&param4=1&param5=3'], '', $string);
-        $lollString = 'url=%2Ftest%2Findex.html';
+        return implode('&', $paramsWithoutTree);
+    }
 
-        $middleString = '';
-        foreach ($associativeArray as $key => $value) {
-            $middleString .= $key . '=' . $value . '&';
-        }
-
-        $resultString = $startString . $middleString . $lollString;
-
-        return $resultString;
+    /**
+     * @param string $path
+     * @return string
+     */
+    protected function pathToString(string $path): string
+    {
+        return str_replace('/', '%2F', $path);
     }
 }
