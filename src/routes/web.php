@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\TopicController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +16,29 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('index');
 });
+
+/**
+ * Создать новую статью
+ */
+Route::post('/topics/create', [TopicController::class, 'createTopic'])
+    ->name('createTopic');
+
+/**
+ * Получить автора статьи
+ */
+Route::get('/topics/{topic}/author', [TopicController::class, 'getTopicAuthor'])
+    ->name('getTopicAuthor');
+
+/**
+ * Получить все статьи автора
+ */
+Route::get('/customer/{customer}/topics', [CustomerController::class, 'getCustomerTopics'])
+    ->name('getCustomerTopics');
+
+/**
+ * Сменить автора статьи
+ */
+Route::put('/topics/{topic}/edit', [TopicController::class, 'editTopicAuthor'])
+    ->name('editTopicAuthor');

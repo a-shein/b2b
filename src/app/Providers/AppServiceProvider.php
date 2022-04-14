@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Http\Controllers\TopicService;
+use App\Service\CustomerService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +15,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(CustomerService::class, function(): CustomerService {
+            return new CustomerService();
+        });
+
+        $this->app->bind(TopicService::class, function(): TopicService {
+            return new TopicService();
+        });
     }
 
     /**
