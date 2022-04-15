@@ -41,19 +41,19 @@ class Task2 extends Command
     {
         $data = explode('&', $params);
 
-        $paramsWithoutTree = [];
+        $paramsWithoutThree = [];
 
         foreach ($data as $param) {
             list(, $value) = explode('=', $param);
 
             if ($value != 3) {
-                $paramsWithoutTree[$value] = $param;
+                $paramsWithoutThree[$value] = $param;
             }
         }
 
-        ksort($paramsWithoutTree);
+        ksort($paramsWithoutThree);
 
-        return implode('&', $paramsWithoutTree);
+        return implode('&', $paramsWithoutThree);
     }
 
     /**
